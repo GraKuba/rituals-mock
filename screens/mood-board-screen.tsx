@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Music, ShoppingBag, Camera, History } from 'lucide-react'
 
 const MOOD_DATA = {
@@ -12,32 +12,86 @@ const MOOD_DATA = {
       thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=300&fit=crop'
     },
     playlist: { title: 'Stress Relief', artist: 'Spotify', songs: 12 },
-    product: {
-      name: 'The Ritual of Jing',
-      price: '€29.90',
-      description: 'Sacred Lotus & Jujube',
-      image: 'https://images.unsplash.com/photo-1602874801006-87294e47572e?w=300&h=300&fit=crop'
-    },
-    recommendedProducts: [
-      {
-        name: 'Jing Body Cream',
-        price: '€19.90',
-        description: 'Deeply nourishing formula with Sacred Lotus',
-        image: 'https://images.unsplash.com/photo-1571875257727-256c39da42af?w=300&h=300&fit=crop'
+    products: {
+      explorer: {
+        main: {
+          name: 'The Ritual of Jing - Starter',
+          price: '€19.90',
+          description: 'Sacred Lotus Body Mist',
+          image: 'https://images.unsplash.com/photo-1602874801006-87294e47572e?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Jing Hand Balm',
+            price: '€9.90',
+            description: 'Calming hand cream with Sacred Lotus',
+            image: 'https://images.unsplash.com/photo-1571875257727-256c39da42af?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Mini Sleep Mist',
+            price: '€12.90',
+            description: 'Travel-size lavender pillow spray',
+            image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Calming Ritual Set',
-        price: '€44.90',
-        description: 'Complete relaxation experience',
-        image: 'https://images.unsplash.com/photo-1600428650421-273c8145484c?w=300&h=300&fit=crop'
+      lover: {
+        main: {
+          name: 'The Ritual of Jing',
+          price: '€29.90',
+          description: 'Sacred Lotus & Jujube Body Cream',
+          image: 'https://images.unsplash.com/photo-1602874801006-87294e47572e?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Jing Body Cream',
+            price: '€19.90',
+            description: 'Deeply nourishing formula with Sacred Lotus',
+            image: 'https://images.unsplash.com/photo-1571875257727-256c39da42af?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Calming Ritual Set',
+            price: '€44.90',
+            description: 'Complete relaxation experience',
+            image: 'https://images.unsplash.com/photo-1600428650421-273c8145484c?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Sleep Mist',
+            price: '€14.90',
+            description: 'Lavender & chamomile pillow spray',
+            image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Sleep Mist',
-        price: '€14.90',
-        description: 'Lavender & chamomile pillow spray',
-        image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=300&fit=crop'
+      soulpartner: {
+        main: {
+          name: 'The Ritual of Jing - Luxury Collection',
+          price: '€89.90',
+          description: 'Complete Sacred Lotus & Jujube Ritual Set',
+          image: 'https://images.unsplash.com/photo-1602874801006-87294e47572e?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Jing Foaming Shower Gel',
+            price: '€29.90',
+            description: 'Luxurious foaming gel with Sacred Lotus',
+            image: 'https://images.unsplash.com/photo-1571875257727-256c39da42af?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Premium Calming Ritual Set',
+            price: '€74.90',
+            description: 'Exclusive relaxation experience with silk pouch',
+            image: 'https://images.unsplash.com/photo-1600428650421-273c8145484c?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Jing Scented Candle',
+            price: '€24.90',
+            description: 'Hand-poured candle with Sacred Lotus essence',
+            image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=300&h=300&fit=crop'
+          }
+        ]
       }
-    ]
+    }
   },
   low_energy: {
     video: {
@@ -47,32 +101,86 @@ const MOOD_DATA = {
       thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop'
     },
     playlist: { title: 'Rise & Shine', artist: 'Spotify', songs: 18 },
-    product: {
-      name: 'The Ritual of Mehr',
-      price: '€24.90',
-      description: 'Sweet Orange & Cedar Wood',
-      image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=300&fit=crop'
-    },
-    recommendedProducts: [
-      {
-        name: 'Energy Boost Shower',
-        price: '€17.90',
-        description: 'Citrus & ginger energizing gel',
-        image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=300&h=300&fit=crop'
+    products: {
+      explorer: {
+        main: {
+          name: 'The Ritual of Mehr - Starter',
+          price: '€16.90',
+          description: 'Sweet Orange Body Mist',
+          image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Energy Boost Mini',
+            price: '€11.90',
+            description: 'Travel-size citrus shower gel',
+            image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Ginger Hand Scrub',
+            price: '€13.90',
+            description: 'Energizing hand exfoliator',
+            image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Morning Ritual Kit',
-        price: '€39.90',
-        description: 'Awakening body care essentials',
-        image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300&h=300&fit=crop'
+      lover: {
+        main: {
+          name: 'The Ritual of Mehr',
+          price: '€24.90',
+          description: 'Sweet Orange & Cedar Wood Body Oil',
+          image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Energy Boost Shower',
+            price: '€17.90',
+            description: 'Citrus & ginger energizing gel',
+            image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Morning Ritual Kit',
+            price: '€39.90',
+            description: 'Awakening body care essentials',
+            image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Vitality Scrub',
+            price: '€22.90',
+            description: 'Exfoliating body polish with sweet orange',
+            image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Vitality Scrub',
-        price: '€22.90',
-        description: 'Exfoliating body polish with sweet orange',
-        image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=300&h=300&fit=crop'
+      soulpartner: {
+        main: {
+          name: 'The Ritual of Mehr - Deluxe Collection',
+          price: '€79.90',
+          description: 'Complete Energizing Ritual Set',
+          image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Mehr Luxury Shower Oil',
+            price: '€34.90',
+            description: 'Premium energizing shower oil',
+            image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Deluxe Morning Ritual Set',
+            price: '€69.90',
+            description: 'Complete awakening collection with gift box',
+            image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Vitality Massage Oil',
+            price: '€32.90',
+            description: 'Invigorating massage oil with cedar wood',
+            image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=300&h=300&fit=crop'
+          }
+        ]
       }
-    ]
+    }
   },
   joyful: {
     video: {
@@ -82,32 +190,86 @@ const MOOD_DATA = {
       thumbnail: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&h=300&fit=crop'
     },
     playlist: { title: 'Feel Good Vibes', artist: 'Spotify', songs: 25 },
-    product: {
-      name: 'Ritual of Happiness',
-      price: '€34.90',
-      description: 'Neroli & Sandalwood Gift Set',
-      image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=300&h=300&fit=crop'
-    },
-    recommendedProducts: [
-      {
-        name: 'Happy Buddha Body Mist',
-        price: '€16.90',
-        description: 'Uplifting neroli & sandalwood spray',
-        image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+    products: {
+      explorer: {
+        main: {
+          name: 'Ritual of Happiness - Starter',
+          price: '€18.90',
+          description: 'Neroli Body Mist',
+          image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Happiness Hand Balm',
+            price: '€9.90',
+            description: 'Nourishing hand cream with uplifting scents',
+            image: 'https://images.unsplash.com/photo-1585652757173-57de5e9fab42?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Mini Buddha Mist',
+            price: '€11.90',
+            description: 'Travel-size uplifting body spray',
+            image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Joy Collection',
-        price: '€49.90',
-        description: 'Celebration essentials gift set',
-        image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300&h=300&fit=crop'
+      lover: {
+        main: {
+          name: 'Ritual of Happiness',
+          price: '€34.90',
+          description: 'Neroli & Sandalwood Gift Set',
+          image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Happy Buddha Body Mist',
+            price: '€16.90',
+            description: 'Uplifting neroli & sandalwood spray',
+            image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Joy Collection',
+            price: '€49.90',
+            description: 'Celebration essentials gift set',
+            image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Happiness Hand Balm',
+            price: '€9.90',
+            description: 'Nourishing hand cream with uplifting scents',
+            image: 'https://images.unsplash.com/photo-1585652757173-57de5e9fab42?w=300&h=300&fit=crop'
+          }
+        ]
       },
-      {
-        name: 'Happiness Hand Balm',
-        price: '€9.90',
-        description: 'Nourishing hand cream with uplifting scents',
-        image: 'https://images.unsplash.com/photo-1585652757173-57de5e9fab42?w=300&h=300&fit=crop'
+      soulpartner: {
+        main: {
+          name: 'Ritual of Happiness - Premium Collection',
+          price: '€99.90',
+          description: 'Complete Neroli & Sandalwood Luxury Set',
+          image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=300&h=300&fit=crop'
+        },
+        recommended: [
+          {
+            name: 'Deluxe Happy Buddha Set',
+            price: '€39.90',
+            description: 'Premium uplifting ritual collection',
+            image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Joy Luxury Collection',
+            price: '€89.90',
+            description: 'Exclusive celebration set with silk wrapping',
+            image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300&h=300&fit=crop'
+          },
+          {
+            name: 'Happiness Scented Candle',
+            price: '€27.90',
+            description: 'Hand-poured candle with neroli essence',
+            image: 'https://images.unsplash.com/photo-1585652757173-57de5e9fab42?w=300&h=300&fit=crop'
+          }
+        ]
       }
-    ]
+    }
   }
 }
 
@@ -118,7 +280,7 @@ const TIER_CONTENT = {
 }
 
 export default function MoodBoardScreen() {
-  const [apiKey, setApiKey] = useState(process.env.EXPO_PUBLIC_GEMINI_API_KEY || '')
+  const [apiKey, setApiKey] = useState('')
   const [showApiInput, setShowApiInput] = useState(false)
   const [tier, setTier] = useState<'explorer' | 'lover' | 'soulpartner'>('explorer')
   const [view, setView] = useState<'scan' | 'journal'>('scan')
@@ -130,6 +292,23 @@ export default function MoodBoardScreen() {
     { date: 'Tuesday', mood: 'Joyful', rituals: 3 },
     { date: 'Wednesday', mood: 'Low Energy', rituals: 1 },
   ])
+
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem('gemini_api_key')
+    if (savedApiKey) {
+      setApiKey(savedApiKey)
+    } else if (process.env.EXPO_PUBLIC_GEMINI_API_KEY) {
+      setApiKey(process.env.EXPO_PUBLIC_GEMINI_API_KEY)
+    }
+  }, [])
+
+  // Save API key to localStorage whenever it changes
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('gemini_api_key', apiKey)
+    }
+  }, [apiKey])
 
   const analyzeMood = async (imageSrc: string) => {
     if (!apiKey) {
@@ -317,21 +496,13 @@ export default function MoodBoardScreen() {
           <div className="flex gap-6 border-b border-border -mb-4">
             <button
               onClick={() => setView('scan')}
-              className={`pb-4 font-sans text-xs tracking-[0.15em] uppercase transition ${
-                view === 'scan'
-                  ? 'text-foreground border-b-2 border-accent font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-foreground border-b-2 border-accent font-semibold"
             >
               Scan
             </button>
             <button
               onClick={() => setView('journal')}
-              className={`pb-4 font-sans text-xs tracking-[0.15em] uppercase transition ${
-                view === 'journal'
-                  ? 'text-foreground border-b-2 border-accent font-semibold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-muted-foreground hover:text-foreground"
             >
               Journal
             </button>
@@ -350,7 +521,13 @@ export default function MoodBoardScreen() {
                 <p className="text-sm text-muted-foreground font-sans">Let us help you find the perfect ritual</p>
               </div>
               <button
-                onClick={handleCapture}
+                onClick={() => {
+                  if (apiKey) {
+                    handleCapture()
+                  } else {
+                    setShowApiInput(true)
+                  }
+                }}
                 className="px-12 py-3 bg-accent text-accent-foreground font-sans font-semibold hover:opacity-90 transition text-xs tracking-widest uppercase"
               >
                 {apiKey ? 'Activate Mood Mirror' : 'Add API Key'}
@@ -444,17 +621,17 @@ export default function MoodBoardScreen() {
                   <div className="bg-card border border-border overflow-hidden shadow-sm">
                     <div className="relative h-64 bg-linear-to-br from-accent/5 to-background">
                       <img
-                        src={MOOD_DATA[currentMood].product.image}
-                        alt={MOOD_DATA[currentMood].product.name}
+                        src={MOOD_DATA[currentMood].products[tier].main.image}
+                        alt={MOOD_DATA[currentMood].products[tier].main.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-serif text-lg text-foreground flex-1 pr-3">{MOOD_DATA[currentMood].product.name}</h3>
-                        <span className="text-base font-semibold text-foreground whitespace-nowrap">{MOOD_DATA[currentMood].product.price}</span>
+                        <h3 className="font-serif text-lg text-foreground flex-1 pr-3">{MOOD_DATA[currentMood].products[tier].main.name}</h3>
+                        <span className="text-base font-semibold text-foreground whitespace-nowrap">{MOOD_DATA[currentMood].products[tier].main.price}</span>
                       </div>
-                      <p className="text-sm text-muted-foreground font-sans mb-5">{MOOD_DATA[currentMood].product.description}</p>
+                      <p className="text-sm text-muted-foreground font-sans mb-5">{MOOD_DATA[currentMood].products[tier].main.description}</p>
                       <button className="w-full py-3 bg-accent text-accent-foreground font-sans font-semibold hover:opacity-90 transition text-xs tracking-widest uppercase flex items-center justify-center gap-2">
                         <ShoppingBag className="w-4 h-4" />
                         Add to Bag
@@ -469,7 +646,7 @@ export default function MoodBoardScreen() {
                   <p className="text-sm text-muted-foreground font-sans text-center mb-6">Curated products to match your mood</p>
 
                   <div className="grid grid-cols-1 gap-4">
-                    {MOOD_DATA[currentMood].recommendedProducts.map((product, index) => (
+                    {MOOD_DATA[currentMood].products[tier].recommended.map((product, index) => (
                       <div key={index} className="bg-card border border-border overflow-hidden shadow-sm">
                         <div className="flex gap-4 p-4">
                           <div className="w-24 h-24 shrink-0 bg-linear-to-br from-accent/5 to-background rounded overflow-hidden">
@@ -569,21 +746,13 @@ export default function MoodBoardScreen() {
         <div className="flex gap-6 border-b border-border -mb-4">
           <button
             onClick={() => setView('scan')}
-            className={`pb-4 font-sans text-xs tracking-[0.15em] uppercase transition ${
-              view === 'scan'
-                ? 'text-foreground border-b-2 border-accent font-semibold'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-muted-foreground hover:text-foreground"
           >
             Scan
           </button>
           <button
             onClick={() => setView('journal')}
-            className={`pb-4 font-sans text-xs tracking-[0.15em] uppercase transition ${
-              view === 'journal'
-                ? 'text-foreground border-b-2 border-accent font-semibold'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
+            className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-foreground border-b-2 border-accent font-semibold"
           >
             Journal
           </button>
