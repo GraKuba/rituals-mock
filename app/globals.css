@@ -1,26 +1,133 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Rituals brand color scheme - Light mode */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1919;
+  --card: #faf9f7;
+  --card-foreground: #1a1919;
+  --popover: #ffffff;
+  --popover-foreground: #1a1919;
+  --primary: #1a1919;
+  --primary-foreground: #ffffff;
+  --secondary: #faf9f7;
+  --secondary-foreground: #1a1919;
+  --muted: #e8e4e1;
+  --muted-foreground: #666666;
+  --accent: #d32f2f;
+  --accent-foreground: #ffffff;
+  --destructive: #d32f2f;
+  --destructive-foreground: #ffffff;
+  --border: #e8e4e1;
+  --input: #ffffff;
+  --ring: #d4af37;
+  --chart-1: #d32f2f;
+  --chart-2: #d4af37;
+  --chart-3: #1a1919;
+  --chart-4: #faf9f7;
+  --chart-5: #c2a99a;
+  --radius: 0rem;
+  --sidebar: #faf9f7;
+  --sidebar-foreground: #1a1919;
+  --sidebar-primary: #1a1919;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d32f2f;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e8e4e1;
+  --sidebar-ring: #d4af37;
+}
+
+.dark {
+  /* Rituals brand color scheme - Dark mode (as seen in the app screenshots) */
+  --background: #1a1919;
+  --foreground: #ffffff;
+  --card: #2a2424;
+  --card-foreground: #ffffff;
+  --popover: #1a1919;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #1a1919;
+  --secondary: #2a2424;
+  --secondary-foreground: #ffffff;
+  --muted: #3a3434;
+  --muted-foreground: #d0d0d0;
+  --accent: #d32f2f;
+  --accent-foreground: #ffffff;
+  --destructive: #d32f2f;
+  --destructive-foreground: #ffffff;
+  --border: #3a3434;
+  --input: #2a2424;
+  --ring: #d4af37;
+  --chart-1: #d32f2f;
+  --chart-2: #d4af37;
+  --chart-3: #ffffff;
+  --chart-4: #2a2424;
+  --chart-5: #c2a99a;
+  --sidebar: #1a1919;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #1a1919;
+  --sidebar-accent: #d32f2f;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #3a3434;
+  --sidebar-ring: #d4af37;
 }
 
 @theme inline {
+  --font-sans: 'Scala Sans Pro', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-serif: 'Times New Roman', serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Added Times New Roman serif font for headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
 }
