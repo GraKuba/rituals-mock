@@ -1,6 +1,6 @@
 export default function MobileFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-300 p-4">
+    <div className="flex items-center justify-center min-h-[90vh] md:min-h-screen bg-gray-300 p-4">
       <div className="relative w-full max-w-sm">
         {/* iPhone Bezel - Single frame border */}
         <div className="relative bg-black rounded-3xl shadow-2xl overflow-hidden" style={{ aspectRatio: '9/19.5' }}>

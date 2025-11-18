@@ -28,7 +28,7 @@ export default function Hero() {
   ]
 
   return (
-    <section className="relative w-full h-[75vh] bg-secondary overflow-hidden">
+    <section className="relative w-full h-[65vh] md:h-[75vh] bg-secondary overflow-hidden">
       {/* Slides */}
       <div className="absolute inset-0">
         {slides.map((slide, index) => (
