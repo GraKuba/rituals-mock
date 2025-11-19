@@ -42,17 +42,17 @@ export default function ProductCarousel() {
   ]
 
   return (
-    <section className="w-full bg-white py-8 px-4">
+    <section className="w-full bg-primary text-primary-foreground py-8 px-4">
       <div className="w-full">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-serif text-foreground">
+          <h2 className="text-2xl font-serif text-primary-foreground">
             New Arrivals
           </h2>
           <div className="flex gap-2">
-            <button className="w-8 h-8 rounded-full border border-border hover:border-foreground transition">
+            <button className="w-8 h-8 rounded-full border border-primary-foreground/20 hover:border-primary-foreground transition text-primary-foreground">
               <ChevronLeft className="w-4 h-4 mx-auto" />
             </button>
-            <button className="w-8 h-8 rounded-full border border-border hover:border-foreground transition">
+            <button className="w-8 h-8 rounded-full border border-primary-foreground/20 hover:border-primary-foreground transition text-primary-foreground">
               <ChevronRight className="w-4 h-4 mx-auto" />
             </button>
           </div>
@@ -62,30 +62,30 @@ export default function ProductCarousel() {
         <div className="grid grid-cols-2 gap-4">
           {products.map((product, index) => (
             <div key={index} className="group">
-              <div className="relative bg-secondary overflow-hidden mb-3 aspect-square flex items-center justify-center">
+              <div className="relative bg-primary-foreground/10 overflow-hidden mb-3 aspect-square flex items-center justify-center">
                 <img
                   src={product.image || "/placeholder.svg"}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                <span className="absolute top-2 left-2 text-[10px] text-muted-foreground font-sans">
+                <span className="absolute top-2 left-2 text-[10px] text-primary-foreground/60 font-sans">
                   {product.tag}
                 </span>
-                <button className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white text-foreground flex items-center justify-center">
+                <button className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white text-primary flex items-center justify-center">
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
-              <h3 className="text-sm font-serif text-foreground mb-1">
+              <h3 className="text-sm font-serif text-primary-foreground mb-1">
                 {product.name}
               </h3>
-              <p className="text-xs text-muted-foreground font-sans mb-2 line-clamp-2">
+              <p className="text-xs text-primary-foreground/60 font-sans mb-2 line-clamp-2">
                 {product.description}
               </p>
               <div className="flex flex-col gap-0.5">
-                <span className="text-base font-serif text-foreground">
+                <span className="text-base font-serif text-primary-foreground">
                   {product.price}
                 </span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[10px] text-primary-foreground/60">
                   Value {product.value}
                 </span>
               </div>

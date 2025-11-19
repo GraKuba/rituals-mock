@@ -9,7 +9,7 @@ const MOOD_DATA = {
       title: '2-min Breathwork',
       description: 'Calm your nervous system',
       duration: '2:00',
-      thumbnail: '/photos/rituals-2.webp'
+      thumbnail: '/photos/rituals-11.webp'
     },
     playlist: { title: 'Stress Relief', artist: 'Spotify', songs: 12 },
     products: {
@@ -25,13 +25,13 @@ const MOOD_DATA = {
             name: 'Jing Hand Balm',
             price: '€9.90',
             description: 'Calming hand cream with Sacred Lotus',
-            image: '/photos/rituals-12.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Mini Sleep Mist',
             price: '€12.90',
             description: 'Travel-size lavender pillow spray',
-            image: '/photos/rituals-19.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -40,26 +40,26 @@ const MOOD_DATA = {
           name: 'The Ritual of Jing',
           price: '€29.90',
           description: 'Sacred Lotus & Jujube Body Cream',
-          image: '/photos/rituals-17.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Jing Body Cream',
             price: '€19.90',
             description: 'Deeply nourishing formula with Sacred Lotus',
-            image: '/photos/rituals-18.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Calming Ritual Set',
             price: '€44.90',
             description: 'Complete relaxation experience',
-            image: '/photos/rituals-20.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Sleep Mist',
             price: '€14.90',
             description: 'Lavender & chamomile pillow spray',
-            image: '/photos/rituals-21.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -68,26 +68,26 @@ const MOOD_DATA = {
           name: 'The Ritual of Jing - Luxury Collection',
           price: '€89.90',
           description: 'Complete Sacred Lotus & Jujube Ritual Set',
-          image: '/photos/rituals-10.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Jing Foaming Shower Gel',
             price: '€29.90',
             description: 'Luxurious foaming gel with Sacred Lotus',
-            image: '/photos/rituals-22.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Premium Calming Ritual Set',
             price: '€74.90',
             description: 'Exclusive relaxation experience with silk pouch',
-            image: '/photos/rituals-23.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Jing Scented Candle',
             price: '€24.90',
             description: 'Hand-poured candle with Sacred Lotus essence',
-            image: '/photos/rituals-8.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       }
@@ -98,7 +98,7 @@ const MOOD_DATA = {
       title: 'Morning Energizer',
       description: 'Invigorate your spirit',
       duration: '5:00',
-      thumbnail: '/photos/rituals-2.webp'
+      thumbnail: '/photos/rituals-11.webp'
     },
     playlist: { title: 'Rise & Shine', artist: 'Spotify', songs: 18 },
     products: {
@@ -107,20 +107,20 @@ const MOOD_DATA = {
           name: 'The Ritual of Mehr - Starter',
           price: '€16.90',
           description: 'Sweet Orange Body Mist',
-          image: '/photos/rituals-1.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Energy Boost Mini',
             price: '€11.90',
             description: 'Travel-size citrus shower gel',
-            image: '/photos/rituals-9.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Ginger Hand Scrub',
             price: '€13.90',
             description: 'Energizing hand exfoliator',
-            image: '/photos/rituals-13.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -129,26 +129,26 @@ const MOOD_DATA = {
           name: 'The Ritual of Mehr',
           price: '€24.90',
           description: 'Sweet Orange & Cedar Wood Body Oil',
-          image: '/photos/rituals-14.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Energy Boost Shower',
             price: '€17.90',
             description: 'Citrus & ginger energizing gel',
-            image: '/photos/rituals-15.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Morning Ritual Kit',
             price: '€39.90',
             description: 'Awakening body care essentials',
-            image: '/photos/rituals-16.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Vitality Scrub',
             price: '€22.90',
             description: 'Exfoliating body polish with sweet orange',
-            image: '/photos/rituals-3.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -157,26 +157,26 @@ const MOOD_DATA = {
           name: 'The Ritual of Mehr - Deluxe Collection',
           price: '€79.90',
           description: 'Complete Energizing Ritual Set',
-          image: '/photos/rituals-23.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Mehr Luxury Shower Oil',
             price: '€34.90',
             description: 'Premium energizing shower oil',
-            image: '/photos/rituals-8.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Deluxe Morning Ritual Set',
             price: '€69.90',
             description: 'Complete awakening collection with gift box',
-            image: '/photos/rituals-10.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Vitality Massage Oil',
             price: '€32.90',
             description: 'Invigorating massage oil with cedar wood',
-            image: '/photos/rituals-22.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       }
@@ -187,7 +187,7 @@ const MOOD_DATA = {
       title: 'Celebration Flow',
       description: 'Embrace the moment',
       duration: '3:30',
-      thumbnail: '/photos/rituals-2.webp'
+      thumbnail: '/photos/rituals-11.webp'
     },
     playlist: { title: 'Feel Good Vibes', artist: 'Spotify', songs: 25 },
     products: {
@@ -203,13 +203,13 @@ const MOOD_DATA = {
             name: 'Happiness Hand Balm',
             price: '€9.90',
             description: 'Nourishing hand cream with uplifting scents',
-            image: '/photos/rituals-12.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Mini Buddha Mist',
             price: '€11.90',
             description: 'Travel-size uplifting body spray',
-            image: '/photos/rituals-19.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -218,26 +218,26 @@ const MOOD_DATA = {
           name: 'Ritual of Happiness',
           price: '€34.90',
           description: 'Neroli & Sandalwood Gift Set',
-          image: '/photos/rituals-17.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Happy Buddha Body Mist',
             price: '€16.90',
             description: 'Uplifting neroli & sandalwood spray',
-            image: '/photos/rituals-18.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Joy Collection',
             price: '€49.90',
             description: 'Celebration essentials gift set',
-            image: '/photos/rituals-20.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Happiness Hand Balm',
             price: '€9.90',
             description: 'Nourishing hand cream with uplifting scents',
-            image: '/photos/rituals-21.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       },
@@ -246,26 +246,26 @@ const MOOD_DATA = {
           name: 'Ritual of Happiness - Premium Collection',
           price: '€99.90',
           description: 'Complete Neroli & Sandalwood Luxury Set',
-          image: '/photos/rituals-1.webp'
+          image: '/photos/rituals-11.webp'
         },
         recommended: [
           {
             name: 'Deluxe Happy Buddha Set',
             price: '€39.90',
             description: 'Premium uplifting ritual collection',
-            image: '/photos/rituals-9.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Joy Luxury Collection',
             price: '€89.90',
             description: 'Exclusive celebration set with silk wrapping',
-            image: '/photos/rituals-13.webp'
+            image: '/photos/rituals-11.webp'
           },
           {
             name: 'Happiness Scented Candle',
             price: '€27.90',
             description: 'Hand-poured candle with neroli essence',
-            image: '/photos/rituals-14.webp'
+            image: '/photos/rituals-11.webp'
           }
         ]
       }

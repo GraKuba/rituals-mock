@@ -41,7 +41,7 @@ export default function ShopScreen() {
             key={category}
             className="flex items-center justify-between cursor-pointer group"
           >
-            <h2 className="text-lg font-serif font-bold group-hover:text-accent transition">
+            <h2 className="text-lg font-serif font-bold group-hover:text-[#d4af37] transition">
               {category}
             </h2>
             <span className="text-xl text-primary-foreground/50 group-hover:text-primary-foreground transition">

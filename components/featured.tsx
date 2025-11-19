@@ -13,7 +13,7 @@ export default function Featured() {
   ]
 
   return (
-    <section className="w-full bg-white py-8 px-4">
+    <section className="w-full bg-primary text-primary-foreground py-8 px-4">
       <div className="w-full space-y-6">
         {/* Featured Collections */}
         {featured.map((item, index) => (
@@ -39,13 +39,13 @@ export default function Featured() {
         {/* Our Fan Favorites */}
         <div className="pt-4">
           <div className="mb-6">
-            <p className="text-[10px] tracking-[0.2em] text-muted-foreground mb-3 font-sans">
+            <p className="text-[10px] tracking-[0.2em] text-primary-foreground/60 mb-3 font-sans">
               DISCOVER
             </p>
-            <h2 className="text-2xl font-serif text-foreground mb-4">
+            <h2 className="text-2xl font-serif text-primary-foreground mb-4">
               Our Fan Favorites
             </h2>
-            <p className="text-sm text-muted-foreground font-sans leading-relaxed">
+            <p className="text-sm text-primary-foreground/80 font-sans leading-relaxed">
               From body creams and serums to luxurious home fragrances, these trending products deserve a place in your home.
             </p>
           </div>
@@ -59,7 +59,7 @@ export default function Featured() {
             ].map((image, index) => (
               <div
                 key={index}
-                className="aspect-square bg-secondary overflow-hidden cursor-pointer"
+                className="aspect-square bg-primary-foreground/10 overflow-hidden cursor-pointer"
               >
                 <img
                   src={image || "/placeholder.svg"}

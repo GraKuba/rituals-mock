@@ -7,14 +7,14 @@ export default function MobileFrame({ children }: { children: React.ReactNode })
           
           {/* Status Bar - Left side (Time) */}
           <div className="absolute top-0 left-0 z-50 px-4 py-2.5 flex items-center">
-            <span className="text-black text-sm font-semibold">14:28</span>
+            <span className="text-white text-sm font-semibold">14:28</span>
           </div>
 
           {/* Notch - Center */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-50 w-36 h-6 bg-black rounded-b-3xl"></div>
 
           {/* Status Bar - Right side (Battery, WiFi, Signal) */}
-          <div className="absolute top-0 right-0 z-50 px-4 py-2.5 flex items-center gap-1.5 text-black">
+          <div className="absolute top-0 right-0 z-50 px-4 py-2.5 flex items-center gap-1.5 text-white">
             {/* Signal Strength */}
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12L5 12.01M12 8L12 12.01M19 4L19 12" strokeLinecap="round"/>

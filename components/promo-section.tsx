@@ -1,6 +1,6 @@
 export default function PromoSection() {
   return (
-    <section className="w-full bg-white py-8 px-4">
+    <section className="w-full bg-primary text-primary-foreground py-8 px-4">
       <div className="w-full space-y-6">
         {/* Member Gift Promo */}
         <div
@@ -29,7 +29,7 @@ export default function PromoSection() {
 
         {/* Highlights Section Header */}
         <div className="text-center pt-4">
-          <p className="text-[10px] tracking-[0.2em] text-muted-foreground font-sans">
+          <p className="text-[10px] tracking-[0.2em] text-primary-foreground/60 font-sans">
             OUR HIGHLIGHTS
           </p>
         </div>
