@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Music, ShoppingBag, Camera, History } from 'lucide-react'
-import { useAuth } from '@/lib/auth-context'
+import { Music, ShoppingBag, Camera, ArrowLeft, User, History, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { WebAuthProvider, useWebAuth } from '@/lib/web-auth-context'
 
 const MOOD_DATA = {
   stressed: {
@@ -274,7 +275,7 @@ const MOOD_DATA = {
   }
 }
 
-// Male-specific products (Ritual of Samurai, Ritual of Homme collections)
+// Male-specific products
 const MOOD_DATA_MALE = {
   stressed: {
     video: {
@@ -545,20 +546,13 @@ const MOOD_DATA_MALE = {
   }
 }
 
-const TIER_CONTENT = {
-  explorer: { levels: ['video', 'playlist', 'product'], label: 'Tier 1 - Explorer' },
-  lover: { levels: ['video', 'playlist', 'product'], label: 'Tier 2 - Lover' },
-  soulpartner: { levels: ['video', 'playlist', 'product'], label: 'Tier 3 - Soul Partner' }
-}
-
-export default function MoodBoardScreen() {
-  const { user, isAuthenticated } = useAuth()
+function MoodMirrorContent() {
+  const { user, isAuthenticated, logout } = useWebAuth()
   const [apiKey, setApiKey] = useState('')
   const [showApiInput, setShowApiInput] = useState(false)
   const [view, setView] = useState<'scan' | 'journal'>('scan')
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [currentMood, setCurrentMood] = useState<'stressed' | 'low_energy' | 'joyful' | null>(null)
-  const [loading, setLoading] = useState(false)
 
   // Get tier from authenticated user, default to explorer
   const tier: 'explorer' | 'lover' | 'soulpartner' = isAuthenticated && user?.membershipTier
@@ -568,7 +562,7 @@ export default function MoodBoardScreen() {
   // Check if user is soul partner for journal access
   const isSoulPartner = tier === 'soulpartner'
 
-  // Select mood data based on user gender (male gets Samurai/Homme collections)
+  // Select mood data based on user gender
   const isMale = isAuthenticated && user?.gender === 'male'
   const moodData = isMale ? MOOD_DATA_MALE : MOOD_DATA
 
@@ -589,13 +583,6 @@ export default function MoodBoardScreen() {
     }
   }, [apiKey])
 
-  // Reset to scan view if user is not soulpartner
-  useEffect(() => {
-    if (!isSoulPartner && view === 'journal') {
-      setView('scan')
-    }
-  }, [isSoulPartner, view])
-
   const analyzeMood = async (imageSrc: string) => {
     if (!apiKey) {
       alert('Please enter your Gemini API key in Settings')
@@ -603,17 +590,12 @@ export default function MoodBoardScreen() {
       return
     }
 
-    setLoading(true)
-    console.log('🔍 Starting mood analysis...')
-    console.log('🔑 Using API key:', apiKey.substring(0, 10) + '...')
-
     try {
       const base64Image = imageSrc.split(',')[1]
       if (!base64Image) {
         throw new Error('Failed to process image data')
       }
 
-      console.log('📤 Sending request to Gemini API...')
       const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`
 
       const response = await fetch(apiUrl, {
@@ -636,70 +618,39 @@ export default function MoodBoardScreen() {
         })
       })
 
-      console.log('📥 Response status:', response.status, response.statusText)
-
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('❌ API Error Response:', errorText)
         let errorMessage = `API request failed: ${response.status} ${response.statusText}`
-
         try {
           const errorJson = JSON.parse(errorText)
-          console.error('❌ Parsed Error:', JSON.stringify(errorJson, null, 2))
           errorMessage = errorJson.error?.message || errorMessage
-        } catch (e) {
-          // Error response wasn't JSON
-        }
-
+        } catch (e) {}
         throw new Error(errorMessage)
       }
 
       const data = await response.json()
-      console.log('✅ Full API Response:', JSON.stringify(data, null, 2))
-
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text
 
       if (!text) {
-        console.error('❌ No text found in response:', data)
         throw new Error('No text content in API response')
       }
 
-      console.log('📝 Extracted text:', text)
-
       const cleanJson = text.replace(/```json|```/g, '').trim()
-      console.log('🧹 Cleaned JSON:', cleanJson)
-
       const parsed = JSON.parse(cleanJson)
-      console.log('✨ Parsed mood:', parsed.mood)
 
       if (!['stressed', 'low_energy', 'joyful'].includes(parsed.mood)) {
-        console.error('❌ Invalid mood detected:', parsed.mood)
         throw new Error(`Invalid mood value: ${parsed.mood}`)
       }
 
       setCurrentMood(parsed.mood)
       setStep(3)
-      console.log('🎉 Mood analysis complete!')
 
     } catch (error) {
-      console.error('❌ Gemini Analysis Failed:', error)
-
-      if (error instanceof Error) {
-        console.error('Error message:', error.message)
-        console.error('Error stack:', error.stack)
-      }
-
-      // Fallback to random mood
       const moods: Array<'stressed' | 'low_energy' | 'joyful'> = ['stressed', 'low_energy', 'joyful']
       const fallbackMood = moods[Math.floor(Math.random() * moods.length)]
-      console.log('🎲 Using fallback mood:', fallbackMood)
-
       setCurrentMood(fallbackMood)
       setStep(3)
-
       alert(`Mood analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}. Using random mood.`)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -724,26 +675,54 @@ export default function MoodBoardScreen() {
     setCurrentMood(null)
   }
 
-  // Render Scan View
-  if (view === 'scan') {
-    return (
-      <div className="bg-primary text-primary-foreground min-h-full flex flex-col">
-        {/* Header Section */}
-        <div className="px-6 pt-8 pb-4 bg-primary border-b border-primary-foreground/20">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="font-serif text-2xl text-primary-foreground tracking-wide">Mood Mirror</h1>
+  return (
+    <div className="fixed inset-0 z-[9999] bg-[#2d2926] text-[#f5f3f0] overflow-y-auto">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2d2926]/95 backdrop-blur-md border-b border-[#f5f3f0]/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/landing" className="flex items-center gap-3 text-[#f5f3f0]/60 hover:text-[#f5f3f0] transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+            <span className="text-sm tracking-wider">Back</span>
+          </Link>
+          <div className="text-2xl font-light tracking-widest text-[#f5f3f0]">RITUALS</div>
+          <div className="flex items-center gap-4">
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-[#f5f3f0]/60">{user.name}</span>
+                <span className="text-xs text-[#d4af37] uppercase tracking-wider">{tier}</span>
+                <button
+                  onClick={logout}
+                  className="text-[#f5f3f0]/60 hover:text-[#f5f3f0] transition"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-2 text-sm text-[#f5f3f0]/60 hover:text-[#f5f3f0] transition"
+              >
+                <User className="w-4 h-4" />
+                <span>Sign In</span>
+              </Link>
+            )}
             <button
               onClick={() => setShowApiInput(!showApiInput)}
-              className="text-xs text-primary-foreground/60 tracking-wider hover:text-primary-foreground transition uppercase font-sans cursor-pointer"
+              className="text-xs text-[#f5f3f0]/60 tracking-wider hover:text-[#f5f3f0] transition uppercase"
             >
               Settings
             </button>
           </div>
+        </div>
+      </nav>
 
-          {/* API Key Input */}
-          {showApiInput && (
-            <div className="mb-4 p-4 bg-primary-foreground/10 border border-primary-foreground/20">
-              <label className="text-xs font-sans text-primary-foreground/60 tracking-widest uppercase mb-2 block">
+      {/* Main Content */}
+      <div className="pt-20 min-h-screen">
+        {/* API Key Input */}
+        {showApiInput && (
+          <div className="max-w-md mx-auto px-6 py-4">
+            <div className="p-4 bg-[#f5f3f0]/10 border border-[#f5f3f0]/20 rounded-lg">
+              <label className="text-xs text-[#f5f3f0]/60 tracking-widest uppercase mb-2 block">
                 Gemini API Key
               </label>
               <input
@@ -751,330 +730,309 @@ export default function MoodBoardScreen() {
                 placeholder="Enter your API key"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/40 text-sm font-sans focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full px-4 py-3 bg-[#f5f3f0]/10 border border-[#f5f3f0]/20 text-[#f5f3f0] placeholder-[#f5f3f0]/40 text-sm rounded focus:outline-none focus:ring-1 focus:ring-[#d4af37]"
               />
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Tab Selector */}
-          <div className="flex gap-6 border-b border-primary-foreground/20 -mb-4">
-            <button
-              onClick={() => setView('scan')}
-              className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-primary-foreground border-b-2 border-[#d4af37] font-semibold"
-            >
-              Scan
-            </button>
-            {isSoulPartner && (
+        {/* Tab Navigation for Soul Partners */}
+        {isSoulPartner && (
+          <div className="max-w-4xl mx-auto px-6 pt-6">
+            <div className="flex gap-8 border-b border-[#f5f3f0]/20">
+              <button
+                onClick={() => setView('scan')}
+                className={`pb-4 text-sm tracking-[0.15em] uppercase transition ${
+                  view === 'scan'
+                    ? 'text-[#f5f3f0] border-b-2 border-[#d4af37] font-semibold'
+                    : 'text-[#f5f3f0]/60 hover:text-[#f5f3f0]'
+                }`}
+              >
+                Scan
+              </button>
               <button
                 onClick={() => setView('journal')}
-                className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-primary-foreground/60 hover:text-primary-foreground"
+                className={`pb-4 text-sm tracking-[0.15em] uppercase transition ${
+                  view === 'journal'
+                    ? 'text-[#f5f3f0] border-b-2 border-[#d4af37] font-semibold'
+                    : 'text-[#f5f3f0]/60 hover:text-[#f5f3f0]'
+                }`}
               >
                 Journal
               </button>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Scan Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
-          {step === 1 && (
-            <div className="flex flex-col items-center gap-8 max-w-md w-full">
-              <div className="w-40 h-40 rounded-full border border-primary-foreground/20 flex items-center justify-center bg-primary-foreground/10 shadow-sm">
-                <Camera className="w-16 h-16 text-[#d4af37]" />
-              </div>
-              <div className="text-center">
-                <h2 className="font-serif text-2xl text-primary-foreground mb-2">How are you feeling today?</h2>
-                <p className="text-sm text-primary-foreground/80 font-sans">Let us help you find the perfect ritual</p>
-              </div>
-              <button
-                onClick={() => {
-                  if (apiKey) {
-                    handleCapture()
-                  } else {
-                    setShowApiInput(true)
-                  }
-                }}
-                className="px-12 py-3 bg-[#d4af37] text-white font-sans font-semibold hover:opacity-90 transition text-xs tracking-widest uppercase"
-              >
-                {apiKey ? 'Activate Mood Mirror' : 'Add API Key'}
-              </button>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="flex flex-col items-center gap-6 max-w-md w-full">
-              <div className="w-40 h-40 rounded-full border border-[#d4af37] flex items-center justify-center bg-primary-foreground/10 relative overflow-hidden shadow-lg">
-                {/* Rotating spinner */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin"></div>
-                </div>
-                {/* Pulsing background */}
-                <div className="absolute inset-0 animate-pulse bg-[#d4af37]/5"></div>
-                {/* Scanning icon */}
-                <div className="relative">
-                  <Camera className="w-16 h-16 text-[#d4af37] animate-pulse" />
+        {/* Journal View */}
+        {view === 'journal' && isSoulPartner && user && (
+          <div className="max-w-4xl mx-auto px-6 py-12">
+            {/* Mood Trends */}
+            <div className="mb-12">
+              <h3 className="text-3xl font-light text-[#f5f3f0] mb-6">Mood Trends</h3>
+              <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl p-8">
+                <div className="flex items-end gap-4 h-40">
+                  {(user.journalEntries || []).slice(0, 7).map((entry, i) => {
+                    const moodHeight = { great: 4, good: 3, okay: 2, low: 1 }[entry.mood] || 2
+                    return (
+                      <div key={entry.id} className="flex-1 flex flex-col items-center gap-3">
+                        <div
+                          className="w-full bg-[#d4af37] rounded-t transition-all hover:opacity-80"
+                          style={{ height: `${moodHeight * 30}px` }}
+                          title={`${entry.date}: ${entry.mood}`}
+                        ></div>
+                        <span className="text-xs text-[#f5f3f0]/60 tracking-wider">
+                          {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}
+                        </span>
+                      </div>
+                    )
+                  })}
+                  {Array.from({ length: Math.max(0, 7 - (user.journalEntries?.length || 0)) }).map((_, i) => (
+                    <div key={`empty-${i}`} className="flex-1 flex flex-col items-center gap-3">
+                      <div className="w-full bg-[#f5f3f0]/20 rounded-t" style={{ height: '30px' }}></div>
+                      <span className="text-xs text-[#f5f3f0]/60 tracking-wider">-</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="text-center">
-                <p className="font-serif text-xl text-primary-foreground mb-2">Analyzing your mood...</p>
-                <p className="text-sm text-primary-foreground/80 font-sans tracking-wide">Reading micro-expressions</p>
-              </div>
-              {/* Loading dots */}
-              <div className="flex gap-2">
-                <div className="w-2 h-2 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-                <div className="w-2 h-2 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-                <div className="w-2 h-2 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+            </div>
+
+            {/* Journal Entries */}
+            <div>
+              <h3 className="text-3xl font-light text-[#f5f3f0] mb-6 flex items-center gap-4">
+                <History className="w-8 h-8 text-[#d4af37]" />
+                Journal Entries
+              </h3>
+              <div className="space-y-4">
+                {user.journalEntries && user.journalEntries.length > 0 ? (
+                  user.journalEntries.map((entry) => (
+                    <div key={entry.id} className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <p className="text-xl font-light text-[#f5f3f0] mb-1 capitalize">{entry.mood}</p>
+                          <p className="text-sm text-[#f5f3f0]/60">{entry.date}</p>
+                        </div>
+                        <span className="text-xs bg-[#d4af37] text-white px-4 py-2 rounded-full font-semibold tracking-widest uppercase">
+                          {entry.mood}
+                        </span>
+                      </div>
+                      {entry.notes && (
+                        <p className="text-[#f5f3f0]/80 mb-3">{entry.notes}</p>
+                      )}
+                      {entry.ritualCompleted && (
+                        <p className="text-sm text-[#f5f3f0]/60">
+                          ✓ {entry.ritualCompleted}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl p-8 text-center">
+                    <p className="text-[#f5f3f0]/60">No journal entries yet</p>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 3 && currentMood && (
-            <div className="w-full px-6 py-8">
-              <div className="text-center mb-8">
-                <p className="text-[10px] font-sans text-primary-foreground/60 tracking-[0.2em] uppercase mb-2">
-                  We detected
-                </p>
-                <h2 className="font-serif text-3xl text-primary-foreground mb-3 capitalize">
-                  {currentMood.replace('_', ' ')}
-                </h2>
-                <p className="text-sm text-primary-foreground/80 font-sans tracking-wide">Your Personal Ritual</p>
+        {/* Scan View */}
+        {view === 'scan' && (
+          <>
+            {/* Step 1: Initial State */}
+            {step === 1 && (
+              <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
+                <div className="max-w-2xl mx-auto text-center">
+                  <div className="w-48 h-48 mx-auto mb-8 rounded-full border border-[#f5f3f0]/20 flex items-center justify-center bg-[#f5f3f0]/5">
+                    <Camera className="w-20 h-20 text-[#d4af37]" />
+                  </div>
+                  <h1 className="text-4xl md:text-5xl font-light text-[#f5f3f0] mb-4 tracking-tight">
+                    Mood Mirror
+                  </h1>
+                  <p className="text-xl text-[#f5f3f0]/70 mb-4 leading-relaxed">
+                    Discover your emotional state and receive personalized ritual recommendations
+                  </p>
+                  {isAuthenticated && user && (
+                    <p className="text-sm text-[#d4af37] mb-6">
+                      Personalized for {user.name} • {tier.charAt(0).toUpperCase() + tier.slice(1)} tier
+                    </p>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (apiKey) {
+                        handleCapture()
+                      } else {
+                        setShowApiInput(true)
+                      }
+                    }}
+                    className="px-12 py-4 bg-[#d4af37] text-white text-lg rounded-full hover:bg-[#f5f3f0] hover:text-[#2d2926] transition-colors duration-300 cursor-pointer tracking-wide"
+                  >
+                    {apiKey ? 'Activate Mood Mirror' : 'Add API Key to Start'}
+                  </button>
+                  {!isAuthenticated && (
+                    <p className="text-sm text-[#f5f3f0]/50 mt-6">
+                      <Link href="/login" className="text-[#d4af37] hover:underline">Sign in</Link> for personalized recommendations based on your tier and preferences
+                    </p>
+                  )}
+                </div>
               </div>
+            )}
 
-              {/* Content Based on Tier */}
-              <div className="w-full space-y-6 max-w-2xl mx-auto">
-                {/* Video */}
-                {TIER_CONTENT[tier].levels.includes('video') && (
-                  <div className="bg-card border border-border overflow-hidden shadow-sm">
-                    <div className="relative h-48 bg-linear-to-br from-accent/10 to-accent/5">
+            {/* Step 2: Analyzing */}
+            {step === 2 && (
+              <div className="flex flex-col items-center justify-center min-h-[80vh] px-6">
+                <div className="max-w-md mx-auto text-center">
+                  <div className="w-48 h-48 mx-auto mb-8 rounded-full border border-[#d4af37] flex items-center justify-center bg-[#f5f3f0]/5 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-40 h-40 border-4 border-[#d4af37]/20 border-t-[#d4af37] rounded-full animate-spin"></div>
+                    </div>
+                    <div className="absolute inset-0 animate-pulse bg-[#d4af37]/5"></div>
+                    <Camera className="w-20 h-20 text-[#d4af37] relative animate-pulse" />
+                  </div>
+                  <h2 className="text-3xl font-light text-[#f5f3f0] mb-4">Analyzing your mood...</h2>
+                  <p className="text-lg text-[#f5f3f0]/70">Reading micro-expressions</p>
+                  <div className="flex gap-2 justify-center mt-8">
+                    <div className="w-3 h-3 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                    <div className="w-3 h-3 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                    <div className="w-3 h-3 bg-[#d4af37] rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Results */}
+            {step === 3 && currentMood && (
+              <div className="max-w-4xl mx-auto px-6 py-12">
+                <div className="text-center mb-12">
+                  <p className="text-sm text-[#f5f3f0]/60 tracking-[0.2em] uppercase mb-3">
+                    We detected
+                  </p>
+                  <h2 className="text-5xl font-light text-[#f5f3f0] mb-4 capitalize">
+                    {currentMood.replace('_', ' ')}
+                  </h2>
+                  <p className="text-xl text-[#f5f3f0]/70">Your Personal Ritual</p>
+                  {isAuthenticated && (
+                    <p className="text-sm text-[#d4af37] mt-2">
+                      {tier.charAt(0).toUpperCase() + tier.slice(1)} tier recommendations
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-8">
+                  {/* Video Card */}
+                  <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
+                    <div className="relative h-64 md:h-80">
                       <img
                         src={moodData[currentMood].video.thumbnail}
                         alt={moodData[currentMood].video.title}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center hover:scale-105 transition cursor-pointer">
-                          <span className="text-2xl text-[#d4af37] ml-1">▶</span>
+                        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center hover:scale-105 transition cursor-pointer">
+                          <span className="text-4xl text-[#d4af37] ml-1">▶</span>
                         </div>
                       </div>
-                      <div className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] px-2 py-1 font-sans tracking-wider">
+                      <div className="absolute bottom-4 right-4 bg-black/80 text-white text-sm px-3 py-1 rounded">
                         {moodData[currentMood].video.duration}
                       </div>
                     </div>
-                    <div className="p-5">
-                      <h3 className="font-serif text-lg text-foreground mb-2">{moodData[currentMood].video.title}</h3>
-                      <p className="text-sm text-muted-foreground font-sans">{moodData[currentMood].video.description}</p>
+                    <div className="p-6">
+                      <h3 className="text-2xl font-light text-[#f5f3f0] mb-2">{moodData[currentMood].video.title}</h3>
+                      <p className="text-[#f5f3f0]/70">{moodData[currentMood].video.description}</p>
                     </div>
                   </div>
-                )}
 
-                {/* Playlist */}
-                {TIER_CONTENT[tier].levels.includes('playlist') && (
-                  <div className="bg-card border border-border p-5 shadow-sm">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-[#d4af37]/10 flex items-center justify-center shrink-0">
-                        <Music className="w-6 h-6 text-[#d4af37]" />
+                  {/* Playlist Card */}
+                  <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl p-6">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 rounded-full bg-[#d4af37]/10 flex items-center justify-center shrink-0">
+                        <Music className="w-8 h-8 text-[#d4af37]" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-serif text-lg text-foreground mb-1">{moodData[currentMood].playlist.title}</h3>
-                        <p className="text-sm text-muted-foreground font-sans">{moodData[currentMood].playlist.songs} songs curated for you</p>
+                      <div>
+                        <h3 className="text-2xl font-light text-[#f5f3f0] mb-1">{moodData[currentMood].playlist.title}</h3>
+                        <p className="text-[#f5f3f0]/70">{moodData[currentMood].playlist.songs} songs curated for you</p>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Product */}
-                {TIER_CONTENT[tier].levels.includes('product') && (
-                  <div className="bg-card border border-border overflow-hidden shadow-sm">
-                    <div className="relative h-64 bg-linear-to-br from-accent/5 to-background">
+                  {/* Main Product Card */}
+                  <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
+                    <div className="relative h-80">
                       <img
                         src={moodData[currentMood].products[tier].main.image}
                         alt={moodData[currentMood].products[tier].main.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="p-5">
+                    <div className="p-6">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="font-serif text-lg text-foreground flex-1 pr-3">{moodData[currentMood].products[tier].main.name}</h3>
-                        <span className="text-base font-semibold text-foreground whitespace-nowrap">{moodData[currentMood].products[tier].main.price}</span>
+                        <h3 className="text-2xl font-light text-[#f5f3f0] flex-1 pr-4">{moodData[currentMood].products[tier].main.name}</h3>
+                        <span className="text-xl font-semibold text-[#f5f3f0]">{moodData[currentMood].products[tier].main.price}</span>
                       </div>
-                      <p className="text-sm text-muted-foreground font-sans mb-5">{moodData[currentMood].products[tier].main.description}</p>
-                      <button className="w-full py-3 bg-[#d4af37] text-white font-sans font-semibold hover:opacity-90 transition text-xs tracking-widest uppercase flex items-center justify-center gap-2">
-                        <ShoppingBag className="w-4 h-4" />
+                      <p className="text-[#f5f3f0]/70 mb-6">{moodData[currentMood].products[tier].main.description}</p>
+                      <button className="w-full py-4 bg-[#d4af37] text-white rounded-full hover:bg-[#f5f3f0] hover:text-[#2d2926] transition-colors duration-300 cursor-pointer text-sm tracking-widest uppercase flex items-center justify-center gap-2">
+                        <ShoppingBag className="w-5 h-5" />
                         Add to Bag
                       </button>
                     </div>
                   </div>
-                )}
 
-                {/* Recommended Products - Shows for all users */}
-                <div className="mt-8">
-                  <h3 className="font-serif text-2xl text-foreground mb-4 text-center">Recommended For You</h3>
-                  <p className="text-sm text-muted-foreground font-sans text-center mb-6">Curated products to match your mood</p>
+                  {/* Recommended Products */}
+                  <div className="mt-12">
+                    <h3 className="text-3xl font-light text-[#f5f3f0] mb-4 text-center">Recommended For You</h3>
+                    <p className="text-[#f5f3f0]/70 text-center mb-8">Curated products to match your mood</p>
 
-                  <div className="grid grid-cols-1 gap-4">
-                    {moodData[currentMood].products[tier].recommended.map((product, index) => (
-                      <div key={index} className="bg-card border border-border overflow-hidden shadow-sm">
-                        <div className="flex gap-4 p-4">
-                          <div className="w-24 h-24 shrink-0 bg-linear-to-br from-accent/5 to-background rounded overflow-hidden">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 flex flex-col">
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-serif text-base text-foreground flex-1 pr-2">{product.name}</h4>
-                              <span className="text-sm font-semibold text-foreground whitespace-nowrap">{product.price}</span>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {moodData[currentMood].products[tier].recommended.map((product, index) => (
+                        <div key={index} className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
+                          <div className="flex gap-4 p-4">
+                            <div className="w-28 h-28 shrink-0 rounded-xl overflow-hidden">
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <p className="text-xs text-muted-foreground font-sans mb-3 flex-1">{product.description}</p>
-                            <button className="self-start px-6 py-2 bg-[#d4af37] text-white font-sans font-semibold hover:opacity-90 transition text-[10px] tracking-widest uppercase flex items-center gap-2">
-                              <ShoppingBag className="w-3 h-3" />
-                              Add to Bag
-                            </button>
+                            <div className="flex-1 flex flex-col">
+                              <div className="flex items-start justify-between mb-2">
+                                <h4 className="text-lg font-light text-[#f5f3f0] flex-1 pr-2">{product.name}</h4>
+                                <span className="text-base font-semibold text-[#f5f3f0]">{product.price}</span>
+                              </div>
+                              <p className="text-sm text-[#f5f3f0]/70 mb-3 flex-1">{product.description}</p>
+                              <button className="self-start px-6 py-2 bg-[#d4af37] text-white rounded-full hover:bg-[#f5f3f0] hover:text-[#2d2926] transition-colors duration-300 cursor-pointer text-xs tracking-widest uppercase flex items-center gap-2">
+                                <ShoppingBag className="w-4 h-4" />
+                                Add to Bag
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center mt-8">
-                <button
-                  onClick={handleReset}
-                  className="px-12 py-3 bg-primary-foreground/10 text-primary-foreground font-sans font-semibold hover:bg-primary-foreground/20 transition text-xs tracking-widest uppercase border border-primary-foreground/20"
-                >
-                  Scan Again
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // Journal View
-  return (
-    <div className="bg-primary text-primary-foreground min-h-full flex flex-col">
-      {/* Header Section - Same as Scan */}
-      <div className="px-6 pt-8 pb-4 bg-primary border-b border-primary-foreground/20">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="font-serif text-2xl text-primary-foreground tracking-wide">Mood Mirror</h1>
-          <button
-            onClick={() => setShowApiInput(!showApiInput)}
-            className="text-xs text-primary-foreground/60 tracking-wider hover:text-primary-foreground transition uppercase font-sans cursor-pointer"
-          >
-            Settings
-          </button>
-        </div>
-
-        {/* API Key Input */}
-        {showApiInput && (
-          <div className="mb-4 p-4 bg-primary-foreground/10 border border-primary-foreground/20">
-            <label className="text-xs font-sans text-primary-foreground/60 tracking-widest uppercase mb-2 block">
-              Gemini API Key
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your API key"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/40 text-sm font-sans focus:outline-none focus:ring-1 focus:ring-accent"
-            />
-          </div>
-        )}
-
-        {/* Tab Selector */}
-        <div className="flex gap-6 border-b border-primary-foreground/20 -mb-4">
-          <button
-            onClick={() => setView('scan')}
-            className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-primary-foreground/60 hover:text-primary-foreground"
-          >
-            Scan
-          </button>
-          {isSoulPartner && (
-            <button
-              onClick={() => setView('journal')}
-              className="pb-4 font-sans text-xs tracking-[0.15em] uppercase transition text-primary-foreground border-b-2 border-[#d4af37] font-semibold"
-            >
-              Journal
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Journal Content */}
-      <div className="px-6 py-8">
-        {/* Mood Trends Chart based on user journal entries */}
-        <div className="mb-10">
-          <h3 className="font-serif text-2xl text-primary-foreground mb-6">Mood Trends</h3>
-          <div className="bg-primary-foreground/10 border border-primary-foreground/20 p-6 shadow-sm">
-            <div className="flex items-end gap-3 h-32">
-              {(user?.journalEntries || []).slice(0, 7).map((entry, i) => {
-                const moodHeight = { great: 4, good: 3, okay: 2, low: 1 }[entry.mood] || 2
-                return (
-                  <div key={entry.id} className="flex-1 flex flex-col items-center gap-2">
-                    <div
-                      className="w-full bg-[#d4af37] transition-all hover:opacity-80"
-                      style={{ height: `${moodHeight * 25}px` }}
-                      title={`${entry.date}: ${entry.mood}`}
-                    ></div>
-                    <span className="text-xs text-primary-foreground/60 font-sans tracking-wider">
-                      {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}
-                    </span>
-                  </div>
-                )
-              })}
-              {/* Fill remaining slots if less than 7 entries */}
-              {Array.from({ length: Math.max(0, 7 - (user?.journalEntries?.length || 0)) }).map((_, i) => (
-                <div key={`empty-${i}`} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="w-full bg-primary-foreground/20 transition-all" style={{ height: '25px' }}></div>
-                  <span className="text-xs text-primary-foreground/60 font-sans tracking-wider">-</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Journal Entries from user data */}
-        <div>
-          <h3 className="font-serif text-2xl text-primary-foreground mb-6 flex items-center gap-3">
-            <History className="w-6 h-6 text-[#d4af37]" />
-            Journal Entries
-          </h3>
-          <div className="space-y-4">
-            {user?.journalEntries && user.journalEntries.length > 0 ? (
-              user.journalEntries.map((entry) => (
-                <div key={entry.id} className="bg-primary-foreground/10 border border-primary-foreground/20 p-5 shadow-sm">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <p className="font-serif text-lg text-primary-foreground mb-1 capitalize">{entry.mood}</p>
-                      <p className="text-sm text-primary-foreground/60 font-sans tracking-wide">{entry.date}</p>
+                      ))}
                     </div>
-                    <span className="text-[10px] bg-[#d4af37] text-white px-3 py-1.5 font-sans font-semibold tracking-widest uppercase">
-                      {entry.mood}
-                    </span>
                   </div>
-                  {entry.notes && (
-                    <p className="text-sm text-primary-foreground/80 font-sans mb-2">{entry.notes}</p>
-                  )}
-                  {entry.ritualCompleted && (
-                    <p className="text-xs text-primary-foreground/60 font-sans">
-                      ✓ {entry.ritualCompleted}
-                    </p>
-                  )}
                 </div>
-              ))
-            ) : (
-              <div className="bg-primary-foreground/10 border border-primary-foreground/20 p-5 shadow-sm text-center">
-                <p className="text-sm text-primary-foreground/60 font-sans">No journal entries yet</p>
+
+                {/* Reset Button */}
+                <div className="text-center mt-12">
+                  <button
+                    onClick={handleReset}
+                    className="px-12 py-4 bg-[#f5f3f0]/10 text-[#f5f3f0] rounded-full hover:bg-[#d4af37] hover:border-[#d4af37] transition-colors duration-300 cursor-pointer text-sm tracking-widest uppercase border border-[#f5f3f0]/20"
+                  >
+                    Scan Again
+                  </button>
+                </div>
               </div>
             )}
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
+  )
+}
+
+export default function MoodPage() {
+  return (
+    <WebAuthProvider>
+      <MoodMirrorContent />
+    </WebAuthProvider>
   )
 }

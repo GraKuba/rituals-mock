@@ -1,9 +1,22 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/lib/auth-context'
+import LoginScreen from './login-screen'
 
 export default function AccountScreen() {
   const [activeTab, setActiveTab] = useState('membership')
+  const [showLogin, setShowLogin] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
+
+  if (showLogin) {
+    return (
+      <LoginScreen
+        onBack={() => setShowLogin(false)}
+        onSuccess={() => setShowLogin(false)}
+      />
+    )
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -52,9 +65,20 @@ export default function AccountScreen() {
               <p className="text-[10px] tracking-[0.2em] text-muted-foreground mb-3 font-sans">
                 MY RITUALS
               </p>
-              <h2 className="text-xl font-serif text-foreground mb-2 leading-tight px-4">
-                Get your benefits now and become a Soulmate
-              </h2>
+              {isAuthenticated ? (
+                <>
+                  <h2 className="text-xl font-serif text-foreground mb-2 leading-tight px-4">
+                    Welcome, {user?.name}
+                  </h2>
+                  <p className="text-sm text-muted-foreground capitalize">
+                    {user?.membershipTier} Member
+                  </p>
+                </>
+              ) : (
+                <h2 className="text-xl font-serif text-foreground mb-2 leading-tight px-4">
+                  Get your benefits now and become a Soulmate
+                </h2>
+              )}
             </div>
 
             {/* Meditation Image */}
@@ -112,22 +136,82 @@ export default function AccountScreen() {
           <div className="py-8 space-y-4">
             <div className="text-center mb-8">
               <div className="w-20 h-20 rounded-full bg-secondary mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-10 h-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                {isAuthenticated ? (
+                  <span className="text-2xl font-serif text-foreground">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <svg className="w-10 h-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                )}
               </div>
-              <h3 className="text-lg font-serif text-foreground mb-2">Welcome back</h3>
-              <p className="text-sm text-muted-foreground">Sign in to access your account</p>
+              {isAuthenticated ? (
+                <>
+                  <h3 className="text-lg font-serif text-foreground mb-2">Hello, {user?.name}</h3>
+                  <p className="text-sm text-muted-foreground capitalize">{user?.membershipTier} Member</p>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-serif text-foreground mb-2">Welcome back</h3>
+                  <p className="text-sm text-muted-foreground">Sign in to access your account</p>
+                </>
+              )}
             </div>
 
-            <div className="space-y-3">
-              <button className="w-full border border-foreground text-foreground py-3 font-sans text-xs tracking-widest hover:bg-foreground hover:text-background transition">
-                SIGN IN
-              </button>
-              <button className="w-full bg-primary text-primary-foreground py-3 font-sans text-xs tracking-widest hover:bg-primary/90 transition">
-                CREATE ACCOUNT
-              </button>
-            </div>
+            {!isAuthenticated ? (
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="w-full border border-foreground text-foreground py-3 font-sans text-xs tracking-widest hover:bg-foreground hover:text-background transition"
+                >
+                  SIGN IN
+                </button>
+                <button className="w-full bg-primary text-primary-foreground py-3 font-sans text-xs tracking-widest hover:bg-primary/90 transition">
+                  CREATE ACCOUNT
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* User Preferences Summary */}
+                <div className="bg-secondary p-4 border border-border">
+                  <h4 className="text-sm font-serif mb-3">Your Preferences</h4>
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    <p><span className="text-foreground">Skin Type:</span> {user?.preferences.skinType || 'Not set'}</p>
+                    <p><span className="text-foreground">Favorite Scents:</span> {user?.preferences.favoriteScents?.join(', ') || 'Not set'}</p>
+                    <p><span className="text-foreground">Wellness Goals:</span> {user?.preferences.wellnessGoals?.join(', ') || 'Not set'}</p>
+                  </div>
+                </div>
+
+                {/* Recent Journal Entries */}
+                {user?.journalEntries && user.journalEntries.length > 0 && (
+                  <div className="bg-secondary p-4 border border-border">
+                    <h4 className="text-sm font-serif mb-3">Recent Journal Entries</h4>
+                    <div className="space-y-3">
+                      {user.journalEntries.slice(0, 2).map((entry) => (
+                        <div key={entry.id} className="text-xs">
+                          <div className="flex justify-between text-muted-foreground mb-1">
+                            <span>{entry.date}</span>
+                            <span className="capitalize">{entry.mood}</span>
+                          </div>
+                          <p className="text-foreground">{entry.notes}</p>
+                          {entry.ritualCompleted && (
+                            <p className="text-muted-foreground mt-1">✓ {entry.ritualCompleted}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={logout}
+                  className="w-full border border-foreground text-foreground py-3 font-sans text-xs tracking-widest hover:bg-foreground hover:text-background transition"
+                >
+                  SIGN OUT
+                </button>
+              </div>
+            )}
 
             <div className="pt-8 space-y-4">
               <div className="border-t border-border pt-4">
