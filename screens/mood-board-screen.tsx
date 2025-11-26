@@ -887,7 +887,7 @@ export default function MoodBoardScreen() {
                   <div className="bg-card border border-border overflow-hidden shadow-sm">
                     <div className="relative h-64 bg-linear-to-br from-accent/5 to-background">
                       <img
-                        src={moodData[currentMood].products[tier].main.image}
+                        src={isMale ? '/photos/male-recommended.jpeg' : '/photos/female-recommended.jpeg'}
                         alt={moodData[currentMood].products[tier].main.name}
                         className="w-full h-full object-cover"
                       />
@@ -912,6 +912,30 @@ export default function MoodBoardScreen() {
                   <p className="text-sm text-muted-foreground font-sans text-center mb-6">Curated products to match your mood</p>
 
                   <div className="grid grid-cols-1 gap-4">
+                    {/* Meditation Rituals Card */}
+                    <div className="bg-card border border-border overflow-hidden shadow-sm">
+                      <div className="flex gap-4 p-4">
+                        <div className="w-24 h-24 shrink-0 bg-linear-to-br from-accent/5 to-background rounded overflow-hidden">
+                          <img
+                            src="/photos/meditation-rituals.jpeg"
+                            alt="Meditation Rituals"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-serif text-base text-foreground flex-1 pr-2">Meditation Rituals</h4>
+                            <span className="text-sm font-semibold text-foreground whitespace-nowrap">€24.90</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground font-sans mb-3 flex-1">Complete meditation and mindfulness essentials</p>
+                          <button className="self-start px-4 py-1.5 bg-[#d4af37] text-white font-sans font-semibold hover:opacity-90 transition text-xs tracking-widest uppercase flex items-center gap-1.5">
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            Add to Bag
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     {moodData[currentMood].products[tier].recommended.map((product, index) => (
                       <div key={index} className="bg-card border border-border overflow-hidden shadow-sm">
                         <div className="flex gap-4 p-4">

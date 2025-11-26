@@ -959,7 +959,7 @@ function MoodMirrorContent() {
                   <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
                     <div className="relative h-80">
                       <img
-                        src={moodData[currentMood].products[tier].main.image}
+                        src={isMale ? '/photos/male-recommended.jpeg' : '/photos/female-recommended.jpeg'}
                         alt={moodData[currentMood].products[tier].main.name}
                         className="w-full h-full object-cover"
                       />
@@ -983,6 +983,30 @@ function MoodMirrorContent() {
                     <p className="text-[#f5f3f0]/70 text-center mb-8">Curated products to match your mood</p>
 
                     <div className="grid md:grid-cols-2 gap-6">
+                      {/* Meditation Rituals Card */}
+                      <div className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
+                        <div className="flex gap-4 p-4">
+                          <div className="w-28 h-28 shrink-0 rounded-xl overflow-hidden">
+                            <img
+                              src="/photos/meditation-rituals.jpeg"
+                              alt="Meditation Rituals"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 flex flex-col">
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="text-lg font-light text-[#f5f3f0] flex-1 pr-2">Meditation Rituals</h4>
+                              <span className="text-base font-semibold text-[#f5f3f0]">€24.90</span>
+                            </div>
+                            <p className="text-sm text-[#f5f3f0]/70 mb-3 flex-1">Complete meditation and mindfulness essentials</p>
+                            <button className="self-start px-6 py-2 bg-[#d4af37] text-white rounded-full hover:bg-[#f5f3f0] hover:text-[#2d2926] transition-colors duration-300 cursor-pointer text-xs tracking-widest uppercase flex items-center gap-2">
+                              <ShoppingBag className="w-4 h-4" />
+                              Add to Bag
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
                       {moodData[currentMood].products[tier].recommended.map((product, index) => (
                         <div key={index} className="bg-[#f5f3f0]/5 border border-[#f5f3f0]/10 rounded-2xl overflow-hidden">
                           <div className="flex gap-4 p-4">
